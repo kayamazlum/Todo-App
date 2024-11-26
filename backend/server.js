@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const db = require("./config/db");
+const card = require("./routes/card");
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 const PORT = process.env.PORT || 5000;
+
+app.use("/", card);
 
 db();
 
