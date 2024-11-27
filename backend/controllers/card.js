@@ -1,4 +1,4 @@
-const { default: mongoose } = require("mongoose");
+// const mongoose = require("mongoose");
 const Card = require("../models/card");
 
 const allCard = async (req, res) => {
@@ -23,11 +23,6 @@ const allCard = async (req, res) => {
 const detailCards = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        message: "Geçersiz ID !",
-      });
-    }
 
     const card = await Card.findById(id);
     if (!card) {
@@ -65,13 +60,6 @@ const createCard = async (req, res) => {
 const deleteCard = async (req, res) => {
   const { id } = req.params;
 
-  // Geçersiz ID kontrolü
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({
-      message: "Geçersiz ID",
-    });
-  }
-
   try {
     // Silinecek kartı bulma
     const card = await Card.findById(id);
@@ -101,12 +89,7 @@ const deleteCard = async (req, res) => {
 
 const updateCard = async (req, res) => {
   const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    //buna tekrar bak
-    return res.status(400).json({
-      message: "Geçersiz ID !",
-    });
-  }
+
   const card = await Card.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
