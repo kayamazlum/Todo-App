@@ -1,67 +1,125 @@
+const { default: mongoose } = require("mongoose");
 const Card = require("../models/card");
 
 const allCard = async (req, res) => {
-  const cards = await Card.find();
-  if (!cards) {
-    res.status(404).json({
-      message: "Card lar bulunamadı!",
+  try {
+    const cards = await Card.find();
+    if (!cards || !cards.length) {
+      return res.status(404).json({
+        message: "Card lar bulunamadı!",
+      });
+    }
+    res.status(200).json({
+      cards,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Bir hata oluştu",
+      error: error.message,
     });
   }
-  res.status(200).json({
-    cards,
-  });
 };
 
 const detailCards = async (req, res) => {
-  const card = await Card.findById(req.params.id);
-  if (!card) {
-    res.status(404).json({
-      message: "Card bulunamadı!",
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({
+        message: "Geçersiz ID !",
+      });
+    }
+
+    const card = await Card.findById(id);
+    if (!card) {
+      return res.status(404).json({
+        message: "Card bulunamadı!",
+      });
+    }
+
+    res.status(200).json({
+      card,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Bir hata oluştu",
+      error: error.message,
     });
   }
-  res.status(200).json({
-    card,
-  });
 };
 
 const createCard = async (req, res) => {
-  const card = await Card.create(req.body);
-  if (!card) {
-    res.status(404).json({
-      message: "Card bulunamadı!",
+  try {
+    const card = await Card.create(req.body);
+    res.status(201).json({
+      message: "Card olusturuldu!",
+      card,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Card oluşturulamadı!",
+      error: error,
     });
   }
-  res.status(201).json({
-    card,
-  });
 };
 
 const deleteCard = async (req, res) => {
-  const card = await Card.findById(req.params.id);
-  if (!card) {
-    res.status(404).json({
-      message: "Card bulunamadı!",
+  const { id } = req.params;
+
+  // Geçersiz ID kontrolü
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({
+      message: "Geçersiz ID",
     });
   }
-  await card.remove();
-  res.status(200).json({
-    message: "Card başarıyla silindi.",
-  });
+
+  try {
+    // Silinecek kartı bulma
+    const card = await Card.findById(id);
+
+    // Kart bulunamadıysa hata döndür
+    if (!card) {
+      return res.status(404).json({
+        message: "Card bulunamadı!",
+      });
+    }
+
+    // Kartı sil
+    await card.deleteOne();
+
+    // Başarı mesajı döndür
+    res.status(200).json({
+      message: "Card başarıyla silindi.",
+    });
+  } catch (error) {
+    // Genel hata yakalama
+    res.status(500).json({
+      message: "Card silinirken bir hata oluştu.",
+      error: error.message,
+    });
+  }
 };
 
 const updateCard = async (req, res) => {
-  let card = await Card.findByIdAndUpdate(req.params.id, req.body, {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    //buna tekrar bak
+    return res.status(400).json({
+      message: "Geçersiz ID !",
+    });
+  }
+  const card = await Card.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true,
-  });
-  res.status(200).json({
-    message: "Card başarıyla güncellendi.",
   });
   if (!card) {
     return res.status(404).json({
       message: "Card bulunamadı!",
     });
   }
+  res.status(200).json({
+    message: "Card başarıyla güncellendi.",
+    card,
+  });
 };
 
 module.exports = { allCard, detailCards, createCard, deleteCard, updateCard };

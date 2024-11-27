@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 router.get("/all", allCard);
-router.get("/detail/:id", detailCards);
+router.get("/details/:id", detailCards);
 router.post("/create", createCard);
 router.put("/update/:id", updateCard);
 router.delete("/delete/:id", deleteCard);
