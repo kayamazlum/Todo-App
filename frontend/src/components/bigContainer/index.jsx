@@ -4,6 +4,8 @@ import CardsContainer from "../cardsContainer";
 import DetailsCard from "../detailsCard";
 import axios from "axios";
 import UpdateCardContainer from "../updateCardContainer";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BigContainer = () => {
   const [title, setTitle] = useState("");
@@ -13,8 +15,13 @@ const BigContainer = () => {
   // GET ALL CARD
   const [getAllCardData, setAllCardData] = useState([]);
   const getAllCards = async () => {
-    const allCard = await axios.get("http://localhost:4000/all");
-    setAllCardData(allCard.data.cards);
+    try {
+      const allCard = await axios.get("http://localhost:4000/all");
+      setAllCardData(allCard.data.cards);
+    } catch (error) {
+      console.log(error);
+      alert("Card'lar getirilemedi!");
+    }
   };
   useEffect(() => {
     getAllCards();
@@ -22,15 +29,26 @@ const BigContainer = () => {
 
   // DELETE CARD
   const deleteCard = async (id) => {
-    await axios.delete(`http://localhost:4000/delete/${id}`);
-    await getAllCards();
+    try {
+      await axios.delete(`http://localhost:4000/delete/${id}`);
+      toast.error("Card başarıyla silindi!", { autoClose: 300 });
+      await getAllCards();
+    } catch (error) {
+      console.log("Delete Error : ", error);
+      alert("Card silinirken bir hata oluştu!");
+    }
   };
 
   // DETAILS CARD
   const [detailsCardData, setDetailsCardData] = useState({});
   const getDetailsCard = async (id) => {
-    const d = await axios.get(`http://localhost:4000/details/${id}`);
-    setDetailsCardData(d.data.card);
+    try {
+      const d = await axios.get(`http://localhost:4000/details/${id}`);
+      setDetailsCardData(d.data.card);
+    } catch (error) {
+      console.log(error);
+      alert("Detay getirilirken bir hata oluştu!");
+    }
   };
 
   // CREATE CARD
@@ -47,11 +65,16 @@ const BigContainer = () => {
       alert("Title cannot be empty!");
       return;
     }
-    await createCard(title, content);
-    console.log("Form submitted successfully!");
-    setTitle("");
-    setContent("");
-    await getAllCards();
+    try {
+      await createCard(title, content);
+      toast.success("Form submitted successfully!", { autoClose: 3000 });
+      setTitle("");
+      setContent("");
+      await getAllCards();
+    } catch (error) {
+      console.log("Create error: ", error);
+      alert("Veritabanına bağlanırken bir hata oluştu!");
+    }
   };
 
   // UPDATE CARD
@@ -70,13 +93,20 @@ const BigContainer = () => {
       alert("Title cannot to empty!");
       return;
     }
-    await updateCard(
-      selectedCard._id,
-      selectedCard.title,
-      selectedCard.content
-    );
-    await getAllCards();
-    setUCard(!uCard);
+
+    try {
+      await updateCard(
+        selectedCard._id,
+        selectedCard.title,
+        selectedCard.content
+      );
+      toast.success("Card başarıyla güncellendi!", { autoClose: 3000 });
+      await getAllCards();
+      setUCard(!uCard);
+    } catch (error) {
+      console.log("Update error: ", error);
+      alert("Veritabanına bağlanırken bir hata oluştu!");
+    }
   };
 
   return (
@@ -152,6 +182,7 @@ const BigContainer = () => {
       ) : (
         <></>
       )}
+      <ToastContainer />
     </div>
   );
 };
