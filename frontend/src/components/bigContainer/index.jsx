@@ -56,18 +56,27 @@ const BigContainer = () => {
 
   // UPDATE CARD
   const [uCard, setUCard] = useState(false);
-  const updateCard = async (title, content, id) => {
-    await axios.put(`http://localhost:4000/update/${id}`, title, content);
-  };
 
+  const [selectedCard, setSelectedCard] = useState({});
+  const updateCard = async (id, title, content) => {
+    await axios.put(`http://localhost:4000/update/${id}`, {
+      title: title,
+      content: content,
+    });
+  };
   const handleUpdate = async (e) => {
     e.preventDefault();
     if (title.trim() === 0) {
-      alert("Title cannot to empty");
+      alert("Title cannot to empty!");
       return;
     }
-
-    await updateCard(title, content, id);
+    await updateCard(
+      selectedCard._id,
+      selectedCard.title,
+      selectedCard.content
+    );
+    await getAllCards();
+    setUCard(!uCard);
   };
 
   return (
@@ -120,6 +129,8 @@ const BigContainer = () => {
         detailsCardData={detailsCardData}
         uCard={uCard}
         setUCard={setUCard}
+        selectedCard={selectedCard}
+        setSelectedCard={setSelectedCard}
       />
       {det ? (
         <DetailsCard
@@ -134,8 +145,8 @@ const BigContainer = () => {
         <UpdateCardContainer
           uCard={uCard}
           setUCard={setUCard}
-          detailsCardData={detailsCardData}
-          setDetailsCardData={setDetailsCardData}
+          selectedCard={selectedCard}
+          setSelectedCard={setSelectedCard}
           handleUpdate={handleUpdate}
         />
       ) : (

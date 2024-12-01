@@ -11,6 +11,7 @@ const Card = ({
   getDetailsCard,
   setUCard,
   uCard,
+  setSelectedCard,
 }) => {
   return (
     <div className="flex w-full justify-between bg-black bg-opacity-30 gap-2 rounded-xl p-2 border">
@@ -27,7 +28,7 @@ const Card = ({
           size={20}
           className="cursor-pointer hover:scale-125 duration-300 transition"
           onClick={() => {
-            setUCard(!uCard), getDetailsCard(item._id);
+            setUCard(!uCard), setSelectedCard(item);
           }}
         />
         <MdDeleteForever

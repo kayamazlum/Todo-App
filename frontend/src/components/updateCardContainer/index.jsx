@@ -4,8 +4,8 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 const UpdateCardContainer = ({
   uCard,
   setUCard,
-  detailsCardData,
-  setDetailsCardData,
+  selectedCard,
+  setSelectedCard,
   handleUpdate,
 }) => {
   return (
@@ -21,7 +21,7 @@ const UpdateCardContainer = ({
         </div>
         <div className="border flex w-full my-1"></div>
         <div className="mt-2">
-          <form className="gap-2 flex flex-col">
+          <form onSubmit={handleUpdate} className="gap-2 flex flex-col">
             <div className="flex flex-col gap-1">
               <label htmlFor="title" className="font-medium text-lg">
                 Title
@@ -29,12 +29,12 @@ const UpdateCardContainer = ({
               <input
                 type="text"
                 id="title"
-                value={detailsCardData.title || ""}
+                value={selectedCard.title || ""}
                 onChange={(e) =>
-                  setDetailsCardData({
-                    ...detailsCardData,
+                  setSelectedCard((prev) => ({
+                    ...prev,
                     title: e.target.value,
-                  })
+                  }))
                 }
                 className="rounded-xl text-black py-1 px-2 focus:outline-green-600 border border-gray-400"
                 placeholder="(Cannot be empty)"
@@ -45,15 +45,15 @@ const UpdateCardContainer = ({
                 Content
               </label>
               <textarea
+                value={selectedCard.content || ""}
+                onChange={(e) =>
+                  setSelectedCard((prev) => ({
+                    ...prev,
+                    content: e.target.value,
+                  }))
+                }
                 rows="3"
                 type="text"
-                value={detailsCardData.content || ""}
-                onChange={(e) =>
-                  setDetailsCardData({
-                    ...detailsCardData,
-                    content: e.target.value,
-                  })
-                }
                 id="content"
                 placeholder="(You don't have to)"
                 className="rounded-xl text-black py-1 px-2 resize-y max-h-40 min-h-20 focus:outline-green-600 border border-gray-400"
